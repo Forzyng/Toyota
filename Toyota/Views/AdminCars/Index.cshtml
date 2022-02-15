@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Toyota.Data.Entities.Model>
+
+
+
+@{
+    ViewData["Title"] = "All Models";
+}
+
+
+
+<h1>Index</h1>
+
+
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="row">
+    <div class="col-3">
+        @foreach (var item in Model)
+        {
+            <div class="card">
+                <img class="admin_color_thumb" src="@Html.DisplayFor(modelItem => item.ImgUrl)" />
+                <div class="card-body">
+                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
+                    <p class="card-text">
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </p>
+                    <a asp-action="ModelModifications" asp-route-id="@item.Id" class="btn btn-primary" >Go</a>
+</div>
+
+
+
+            </div>
+        }
+    </div>
+</div>

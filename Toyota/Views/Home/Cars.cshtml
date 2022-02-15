@@ -1,0 +1,171 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Cars</h1>
+    
+</div>
+
+<div id="navModels">
+    Name of Models
+</div>
+<div id="mainModels">
+    Active Model
+</div>
+
+@section Scripts
+{
+<script>
+    let apiModels = "/api/ApiModels";
+    let apiModifications = "/api/GetModifications";
+    let apiColors = "/api/GetModificationColors";
+
+    function onError(err) {
+        console.log("Err");
+        console.log(err);
+    }
+
+
+
+
+    function getColor(id) {
+        console.log(id);
+        fetch(apiColors + "/" + id)
+            .then(res => {
+                if (res.status !== 200) {
+                    onError(res);
+                    return;
+                }
+                return res.json();
+            })
+            .then(models => {
+                let div = document.getElementById("mainModels");
+                let ul = document.createElement("ul");
+
+
+
+                models.map(model => {
+                    let li = document.createElement("li");
+                    li.innerText = model.name;
+                    li.id = model.id;
+                    console.log(model);
+                    li.onclick = function () {
+
+                    }
+                    li.classList.add("spisok");
+
+                    ul.appendChild(li);
+                })
+
+                div.appendChild(ul);
+
+
+
+            })
+            .catch(err => { onError(err); })
+    }
+
+
+
+
+
+
+
+    function getModif(id) {
+        console.log(id);
+        fetch(apiModifications + "/" + id)
+            .then(res => {
+                if (res.status !== 200) {
+                    onError(res);
+                    return;
+                }
+                return res.json();
+            })
+            .then(models => {
+                let div = document.getElementById("mainModels");
+                let ul = document.createElement("ul");
+
+
+
+                models.map(model => {
+                    let li = document.createElement("li");
+                    li.innerText = model.name;
+                    li.id = model.id;
+                    console.log(model);
+                    li.onclick = function () {
+    
+                    }
+                    ul.appendChild(li);
+                    getColor(model.id);
+                })
+
+                div.appendChild(ul);
+
+
+
+            })
+            .catch(err => { onError(err); })
+    }
+
+
+
+    function renderModel(obj) {
+        console.log(obj.id);
+        fetch(apiModels + "/" + obj.id)
+            .then(res => {
+                if (res.status !== 200) {
+                    onError(res);
+                    return;
+                }
+                return res.json();
+            })
+            .then(model => {
+                let div = document.getElementById("mainModels")
+                div.innerHTML = "";
+                console.log(model);
+                let img = document.createElement("img");
+                img.src = model.imgUrl;
+                div.appendChild(img);
+
+                getModif(model.id);
+            })
+            .catch(err => { onError(err); })
+    }
+
+    function renderModelsNav(models) {
+        console.log(models);
+        let div = document.getElementById("navModels");
+        div.innerHTML = "";
+        let ul = document.createElement("ul");
+      
+           
+
+            models.map(model => {
+                let li = document.createElement("li");
+                li.innerText = model.name;
+                li.id = model.id;
+                li.onclick = function () {
+                    renderModel(this);
+                }
+                ul.appendChild(li);})
+        
+        div.appendChild(ul);
+    }
+
+    function getAllModels()
+    {
+        fetch(apiModels)
+            .then(res => {
+                console.log(res);
+                return res.json();
+            })
+            .then(json => {
+                renderModelsNav(json);
+            })
+            .catch(err => { onError(err);})
+    }
+
+    getAllModels();
+</script>
+}

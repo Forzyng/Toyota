@@ -1,0 +1,76 @@
+﻿
+
+@{
+    ViewData["Title"] = "File Backuper";
+}
+
+
+
+<div>
+    <div class="btn-group" style="width: 100%;" >
+        <button style="width:25%" onclick="onBtnClick(this)">Backup_Models</button>
+        <button style="width:25%" onclick="onBtnClick(this)">Backup_Colors</button>
+        <button style="width:25%" onclick="onBtnClick(this)">Backup_Modifications</button>
+        <button style="width:25%" onclick="onBtnClick(this)">Backup_Modification_Colors</button>
+    </div>
+    <br>
+    <br>
+
+    <div id="ShowResult"></div>
+
+    <br>
+    <br>
+    <ul class="border2" id="FilesUL">
+        @foreach (var f in ViewBag.Files)
+        {
+            <li>@f</li>
+        }
+    </ul>
+</div>
+
+@section Scripts
+{
+    <script>
+        let ShowRes = document.getElementById("ShowResult");
+       
+        function Update() {
+            let FilesUL = document.getElementById("FilesUL");
+            FilesUL.innerHTML = "";
+            fetch("/Api/GetDumps")
+                .then(res => res.json())
+                .then(files => {
+                    console.log(files);
+                    for (let i = 0; i < files.length; i++) {
+                        let li = document.createElement("li");
+                        li.innerText = files[i];
+                        FilesUL.appendChild(li);
+                    }
+                })
+
+                .catch(err => { console.log(err) })
+        }
+        function onBtnClick(el) {
+            let txt = el.innerText;
+            console.log(txt);
+
+            fetch("/Api/GetDumps/" + txt )
+                .then(res => res.json())
+                .then(dirs => {
+                    console.log(dirs);
+                    if (dirs[1] === "Success") {
+                       
+                        ShowRes.classList.add("isa_success");
+                        ShowRes.innerText = "We successfully created backup of => " + dirs[0];
+                        Update();
+                    }
+                    else {
+                        ShowRes.classList.add("isa_error");
+                        ShowRes.innerText = "There was error when we tried to creaate backup of => " + dirs[0];
+                    }
+                    })
+                
+                .catch(err => { console.log(err) })
+      
+        }
+    </script>
+}        

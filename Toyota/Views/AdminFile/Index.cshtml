@@ -1,0 +1,129 @@
+﻿
+
+@{
+    ViewData["Title"] = "File Commander";
+}
+
+
+<div id="breadСrumbs">
+    <ul>
+        <li><span>Root</span></li>
+    </ul>
+</div>
+
+
+<div>
+    <ul class="border" id="ComUL">
+        @foreach (var d in ViewBag.Directories)
+        {
+            <li><span data-dirname="@d" onclick="onDirClick()">@d</span></li>
+        }
+    </ul>
+
+    <ul class="border2">
+        @foreach (var f in ViewBag.Files)
+        {
+            <li> <span data-dirname="@f">@f</span></li>
+        }
+    </ul>
+
+</div>
+
+
+@section Scripts {
+    <script>
+
+        function buildBreadСrumbs(curDir) {
+
+            let dirs = curDir.split('~');
+            breadСrumbs = document.getElementById("breadСrumbs");
+            let ul = document.createElement("ul");
+            breadСrumbs.innerHTML = "";
+            dirs.map(dir => {
+                let li = document.createElement("li");
+                let span = document.createElement("span");
+                span.onclick = onDirClick;
+                span.dataset.dirname = dir;
+                span.innerText = dir;
+                li.appendChild(span);
+                ul.appendChild(li);
+            });
+            breadСrumbs.appendChild(ul);
+        }
+        function onDirClick() {
+            el = event.target;
+            event.stopPropagation();
+
+            // let dir = el.textContent.toString();
+            let dir = event.target.dataset.dirname;
+            console.log("try get: ");
+            dir = dir.trim();
+            dir = dir.replaceAll('/', '~');
+            dir = dir.replaceAll('\\', '~');
+            console.log(dir);
+            buildBreadСrumbs(dir);
+            let oldEl = el.querySelector("ul");
+            if (oldEl !== null) {
+                oldEl.remove();
+            } else {
+                console.log("NoParent")
+            }
+            fetch("/Api/getAdminFiles/" + dir)
+                .then(res => {
+                    console.log(res.statusText);
+                    return res.json();
+                })
+                .then(dirs => {
+                    console.log(dirs);
+                    let ul = document.createElement("ul");
+                    ul.classList.add("border");
+                    dirs.map(dir => {
+                        let li = document.createElement("li");
+                        let span = document.createElement("span");
+                        span.onclick = onDirClick;
+                        span.dataset.dirname = dir;
+                        span.innerText = dir;
+                        li.appendChild(span);
+                        ul.appendChild(li);
+                    })
+                    let oldEl = el.querySelector("ul");
+                    if (oldEl !== null) {
+                        oldEl.remove();
+                    } else {
+                        console.log("NoParent")
+                    }
+
+                   
+
+                        fetch("/Api/GetAdminAllFiles/" + dir)
+                            .then(res => {
+                                console.log(res.statusText);
+                                return res.json();
+                            })
+                            .then(files => {
+                                console.log(files);
+                                let ul = document.createElement("ul");
+                                ul.classList.add("border2");
+                                for (let i = 0; i < files.length; i++) {
+                                   
+                                    let li = document.createElement("li");
+                                    let span = document.createElement("span");
+                                    span.dataset.dirname = files[i];
+                                    span.innerText = files[i];;
+                                    li.appendChild(span);
+                                    ul.appendChild(li);
+                                  
+                                }
+                                el.appendChild(ul);
+                            })
+                            .catch(err => { console.log("ERR:"); console.log(err); })
+
+
+
+                   
+                    el.appendChild(ul);
+                })
+                .catch(err => { console.log("ERR:"); console.log(err); })
+        }
+    </script>
+}
