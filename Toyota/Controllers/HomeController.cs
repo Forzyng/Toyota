@@ -34,6 +34,11 @@ namespace Toyota.Controllers
             return View();
         }
 
+        public IActionResult Jwt()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
